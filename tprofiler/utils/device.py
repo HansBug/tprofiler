@@ -2,7 +2,7 @@
 Device utilities for PyTorch operations.
 
 This module provides utilities for device detection, management, and configuration
-across different hardware backends including CPU, CUDA, and NPU. It handles device
+across different hardware backends including CPU and CUDA. It handles device
 selection, torch device namespace retrieval, device ID management, and NCCL backend
 configuration for distributed training scenarios.
 
@@ -28,6 +28,21 @@ logger = logging.getLogger(__name__)
 
 
 def is_cuda_available() -> bool:
+    """
+    Check if CUDA is available on the current system.
+
+    This function wraps PyTorch's built-in CUDA availability check to determine
+    if CUDA-enabled GPUs are accessible for computation.
+
+    :return: True if CUDA is available, False otherwise.
+    :rtype: bool
+
+    Example::
+        >>> if is_cuda_available():
+        ...     print("CUDA is available for GPU computation")
+        ... else:
+        ...     print("CUDA is not available, will use CPU")
+    """
     return torch.cuda.is_available()
 
 
@@ -37,7 +52,6 @@ def get_device_name() -> str:
 
     This function determines the appropriate device type for PyTorch operations
     by checking hardware availability. Currently supports CPU and CUDA devices.
-    NPU support has been removed from this implementation.
 
     :return: The device name string ('cuda' if CUDA is available, otherwise 'cpu').
     :rtype: str
@@ -134,7 +148,7 @@ def set_expandable_segments(enable: bool) -> None:
     Example::
         >>> # Enable expandable segments to help avoid OOM
         >>> set_expandable_segments(True)
-        >>> 
+        >>>
         >>> # Disable expandable segments for more predictable memory usage
         >>> set_expandable_segments(False)
     """
