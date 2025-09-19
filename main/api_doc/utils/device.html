@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tprofiler.utils.device &mdash; tprofiler 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c9d0a6ec" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="tprofiler.utils" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            tprofiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/quick_start/index.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../information/environment.result.html">Run Environment Information</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">tprofiler.config</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">tprofiler.utils</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tprofiler.utils.device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#is-cuda-available">is_cuda_available</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.is_cuda_available"><code class="docutils literal notranslate"><span class="pre">is_cuda_available()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#get-device-name">get_device_name</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.get_device_name"><code class="docutils literal notranslate"><span class="pre">get_device_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#get-torch-device">get_torch_device</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.get_torch_device"><code class="docutils literal notranslate"><span class="pre">get_torch_device()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#get-device-id">get_device_id</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.get_device_id"><code class="docutils literal notranslate"><span class="pre">get_device_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#get-nccl-backend">get_nccl_backend</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.get_nccl_backend"><code class="docutils literal notranslate"><span class="pre">get_nccl_backend()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#set-expandable-segments">set_expandable_segments</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.device.set_expandable_segments"><code class="docutils literal notranslate"><span class="pre">set_expandable_segments()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">tprofiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">tprofiler.utils</a></li>
+      <li class="breadcrumb-item active">tprofiler.utils.device</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api_doc/utils/device.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+    
+    
+  <section id="module-tprofiler.utils.device">
+<span id="tprofiler-utils-device"></span><h1>tprofiler.utils.device<a class="headerlink" href="#module-tprofiler.utils.device" title="Link to this heading"></a></h1>
+<p>Device utilities for PyTorch operations.</p>
+<p>This module provides utilities for device detection, management, and configuration
+across different hardware backends including CPU and CUDA. It handles device
+selection, torch device namespace retrieval, device ID management, and NCCL backend
+configuration for distributed training scenarios.</p>
+<p>The module is inspired by torchtune’s device utilities and provides a unified
+interface for working with different device types in PyTorch applications.</p>
+<section id="is-cuda-available">
+<h2>is_cuda_available<a class="headerlink" href="#is-cuda-available" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.is_cuda_available">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">is_cuda_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#is_cuda_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.is_cuda_available" title="Link to this definition"></a></dt>
+<dd><p>Check if CUDA is available on the current system.</p>
+<p>This function wraps PyTorch’s built-in CUDA availability check to determine
+if CUDA-enabled GPUs are accessible for computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if CUDA is available, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">is_cuda_available</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA is available for GPU computation&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA is not available, will use CPU&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-device-name">
+<h2>get_device_name<a class="headerlink" href="#get-device-name" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.get_device_name">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">get_device_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#get_device_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.get_device_name" title="Link to this definition"></a></dt>
+<dd><p>Get the torch.device name based on the current machine’s available hardware.</p>
+<p>This function determines the appropriate device type for PyTorch operations
+by checking hardware availability. Currently supports CPU and CUDA devices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The device name string (‘cuda’ if CUDA is available, otherwise ‘cpu’).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">device_name</span> <span class="o">=</span> <span class="n">get_device_name</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>  <span class="c1"># &#39;cuda&#39; or &#39;cpu&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-torch-device">
+<h2>get_torch_device<a class="headerlink" href="#get-torch-device" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.get_torch_device">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">get_torch_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#get_torch_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.get_torch_device" title="Link to this definition"></a></dt>
+<dd><p>Return the corresponding torch device namespace based on the current device type.</p>
+<p>This function retrieves the appropriate torch device module (e.g., torch.cuda)
+based on the detected device type. It provides a unified way to access
+device-specific PyTorch functionality.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The corresponding torch device namespace module.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>any</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">device_module</span> <span class="o">=</span> <span class="n">get_torch_device</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Returns torch.cuda if CUDA is available, torch.cpu otherwise</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-device-id">
+<h2>get_device_id<a class="headerlink" href="#get-device-id" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.get_device_id">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">get_device_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#get_device_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.get_device_id" title="Link to this definition"></a></dt>
+<dd><p>Return the current device ID based on the detected device type.</p>
+<p>This function retrieves the current device index for the active device type.
+For CUDA devices, this returns the current CUDA device ID. For CPU, this
+typically returns 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current device index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">device_id</span> <span class="o">=</span> <span class="n">get_device_id</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current device ID: </span><span class="si">{</span><span class="n">device_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-nccl-backend">
+<h2>get_nccl_backend<a class="headerlink" href="#get-nccl-backend" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.get_nccl_backend">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">get_nccl_backend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#get_nccl_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.get_nccl_backend" title="Link to this definition"></a></dt>
+<dd><p>Return the appropriate NCCL backend type based on the current device type.</p>
+<p>This function determines the correct NCCL (NVIDIA Collective Communications Library)
+backend for distributed training operations. NCCL is primarily used for
+multi-GPU communication in distributed PyTorch training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The NCCL backend type string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If no available NCCL backend is found for the current device type.</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">backend</span> <span class="o">=</span> <span class="n">get_nccl_backend</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NCCL backend: </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="set-expandable-segments">
+<h2>set_expandable_segments<a class="headerlink" href="#set-expandable-segments" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tprofiler.utils.device.set_expandable_segments">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.utils.device.</span></span><span class="sig-name descname"><span class="pre">set_expandable_segments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tprofiler/utils/device.html#set_expandable_segments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.device.set_expandable_segments" title="Link to this definition"></a></dt>
+<dd><p>Enable or disable expandable segments for CUDA memory allocation.</p>
+<p>This function configures CUDA memory allocator settings to use expandable
+segments, which can help avoid out-of-memory (OOM) errors by allowing
+the memory pool to grow dynamically. This is particularly useful for
+training large models or handling variable batch sizes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>enable</strong> (<em>bool</em>) – Whether to enable expandable segments for memory allocation.</p>
+</dd>
+</dl>
+<dl>
+<dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Enable expandable segments to help avoid OOM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_expandable_segments</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Disable expandable segments for more predictable memory usage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_expandable_segments</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="tprofiler.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, hansbug.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+    <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+        <div class="rst-other-versions">
+                <dl>
+                    <dt>Branches</dt>
+                        <dd><a href="device.html">main</a></dd>
+                        <dd><a href="../../../HEAD/api_doc/utils/device.html">HEAD</a></dd>
+                </dl>
+        </div>
+    </div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

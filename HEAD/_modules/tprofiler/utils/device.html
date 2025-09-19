@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tprofiler.utils.device &mdash; tprofiler 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=c9d0a6ec" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            tprofiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/quick_start/index.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../information/environment.result.html">Run Environment Information</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/config/index.html">tprofiler.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/utils/index.html">tprofiler.utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tprofiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">tprofiler.utils.device</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+    
+    
+  <h1>Source code for tprofiler.utils.device</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Device utilities for PyTorch operations.</span>
+
+<span class="sd">This module provides utilities for device detection, management, and configuration</span>
+<span class="sd">across different hardware backends including CPU and CUDA. It handles device</span>
+<span class="sd">selection, torch device namespace retrieval, device ID management, and NCCL backend</span>
+<span class="sd">configuration for distributed training scenarios.</span>
+
+<span class="sd">The module is inspired by torchtune&#39;s device utilities and provides a unified</span>
+<span class="sd">interface for working with different device types in PyTorch applications.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Copyright 2025 Bytedance Ltd. and/or its affiliates</span>
+<span class="c1">#</span>
+<span class="c1"># This code is inspired by the torchtune.</span>
+<span class="c1"># https://github.com/pytorch/torchtune/blob/main/torchtune/utils/_device.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) Meta Platforms, Inc. and affiliates.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This source code is licensed under the BSD-style license in https://github.com/pytorch/torchtune/blob/main/LICENSE</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="is_cuda_available">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.is_cuda_available">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_cuda_available</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if CUDA is available on the current system.</span>
+
+<span class="sd">    This function wraps PyTorch&#39;s built-in CUDA availability check to determine</span>
+<span class="sd">    if CUDA-enabled GPUs are accessible for computation.</span>
+
+<span class="sd">    :return: True if CUDA is available, False otherwise.</span>
+<span class="sd">    :rtype: bool</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; if is_cuda_available():</span>
+<span class="sd">        ...     print(&quot;CUDA is available for GPU computation&quot;)</span>
+<span class="sd">        ... else:</span>
+<span class="sd">        ...     print(&quot;CUDA is not available, will use CPU&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_device_name">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.get_device_name">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_device_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the torch.device name based on the current machine&#39;s available hardware.</span>
+
+<span class="sd">    This function determines the appropriate device type for PyTorch operations</span>
+<span class="sd">    by checking hardware availability. Currently supports CPU and CUDA devices.</span>
+
+<span class="sd">    :return: The device name string (&#39;cuda&#39; if CUDA is available, otherwise &#39;cpu&#39;).</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; device_name = get_device_name()</span>
+<span class="sd">        &gt;&gt;&gt; print(device_name)  # &#39;cuda&#39; or &#39;cpu&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="k">return</span> <span class="n">device</span></div>
+
+
+
+<div class="viewcode-block" id="get_torch_device">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.get_torch_device">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_torch_device</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the corresponding torch device namespace based on the current device type.</span>
+
+<span class="sd">    This function retrieves the appropriate torch device module (e.g., torch.cuda)</span>
+<span class="sd">    based on the detected device type. It provides a unified way to access</span>
+<span class="sd">    device-specific PyTorch functionality.</span>
+
+<span class="sd">    :return: The corresponding torch device namespace module.</span>
+<span class="sd">    :rtype: any</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; device_module = get_torch_device()</span>
+<span class="sd">        &gt;&gt;&gt; # Returns torch.cuda if CUDA is available, torch.cpu otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">device_name</span> <span class="o">=</span> <span class="n">get_device_name</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device namespace &#39;</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&#39; not found in torch, try to load torch.cuda.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span></div>
+
+
+
+<div class="viewcode-block" id="get_device_id">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.get_device_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_device_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the current device ID based on the detected device type.</span>
+
+<span class="sd">    This function retrieves the current device index for the active device type.</span>
+<span class="sd">    For CUDA devices, this returns the current CUDA device ID. For CPU, this</span>
+<span class="sd">    typically returns 0.</span>
+
+<span class="sd">    :return: The current device index.</span>
+<span class="sd">    :rtype: int</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; device_id = get_device_id()</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;Current device ID: {device_id}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_torch_device</span><span class="p">()</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_nccl_backend">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.get_nccl_backend">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_nccl_backend</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the appropriate NCCL backend type based on the current device type.</span>
+
+<span class="sd">    This function determines the correct NCCL (NVIDIA Collective Communications Library)</span>
+<span class="sd">    backend for distributed training operations. NCCL is primarily used for</span>
+<span class="sd">    multi-GPU communication in distributed PyTorch training.</span>
+
+<span class="sd">    :return: The NCCL backend type string.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :raises RuntimeError: If no available NCCL backend is found for the current device type.</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     backend = get_nccl_backend()</span>
+<span class="sd">        ...     print(f&quot;NCCL backend: {backend}&quot;)</span>
+<span class="sd">        ... except RuntimeError as e:</span>
+<span class="sd">        ...     print(f&quot;Error: {e}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s2">&quot;nccl&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No available nccl backend found on device type </span><span class="si">{</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_expandable_segments">
+<a class="viewcode-back" href="../../../api_doc/utils/device.html#tprofiler.utils.device.set_expandable_segments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_expandable_segments</span><span class="p">(</span><span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enable or disable expandable segments for CUDA memory allocation.</span>
+
+<span class="sd">    This function configures CUDA memory allocator settings to use expandable</span>
+<span class="sd">    segments, which can help avoid out-of-memory (OOM) errors by allowing</span>
+<span class="sd">    the memory pool to grow dynamically. This is particularly useful for</span>
+<span class="sd">    training large models or handling variable batch sizes.</span>
+
+<span class="sd">    :param enable: Whether to enable expandable segments for memory allocation.</span>
+<span class="sd">    :type enable: bool</span>
+
+<span class="sd">    Example::</span>
+<span class="sd">        &gt;&gt;&gt; # Enable expandable segments to help avoid OOM</span>
+<span class="sd">        &gt;&gt;&gt; set_expandable_segments(True)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Disable expandable segments for more predictable memory usage</span>
+<span class="sd">        &gt;&gt;&gt; set_expandable_segments(False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">_set_allocator_settings</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expandable_segments:</span><span class="si">{</span><span class="n">enable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, hansbug.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+    <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: HEAD
+    <span class="fa fa-caret-down"></span>
+  </span>
+        <div class="rst-other-versions">
+                <dl>
+                    <dt>Branches</dt>
+                        <dd><a href="../../../../main/index.html">main</a></dd>
+                        <dd><a href="device.html">HEAD</a></dd>
+                </dl>
+        </div>
+    </div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
