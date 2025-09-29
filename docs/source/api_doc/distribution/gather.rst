@@ -1,9 +1,9 @@
-tprofiler.dist.gather
+tprofiler.distribution.gather
 =================================================
 
-.. currentmodule:: tprofiler.dist.gather
+.. currentmodule:: tprofiler.distribution.gather
 
-.. automodule:: tprofiler.dist.gather
+.. automodule:: tprofiler.distribution.gather
 
 
 gather

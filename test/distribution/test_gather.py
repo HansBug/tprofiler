@@ -3,7 +3,7 @@ import torch
 import torch.multiprocessing as mp
 from hbutils.system import get_free_port
 
-from tprofiler.dist import gather
+from tprofiler.distribution import gather
 from .worker_context import spawn_worker_context, DistDataSaver
 
 
