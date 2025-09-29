@@ -28,7 +28,7 @@ Overview
     :caption: API Documentation
 
     api_doc/config/index
-    api_doc/dist/index
+    api_doc/distribution/index
     api_doc/utils/index
 
 .. toctree::

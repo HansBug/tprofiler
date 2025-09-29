@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tprofiler.dist.gather &mdash; tprofiler 0.0.1 documentation</title>
+  <title>tprofiler.distribution.gather &mdash; tprofiler 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="tprofiler.utils" href="../utils/index.html" />
-    <link rel="prev" title="tprofiler.dist" href="index.html" /> 
+    <link rel="prev" title="tprofiler.distribution" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,10 +57,10 @@
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../config/index.html">tprofiler.config</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">tprofiler.dist</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">tprofiler.dist.gather</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">tprofiler.distribution</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tprofiler.distribution.gather</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gather">gather</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#tprofiler.dist.gather.gather"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.distribution.gather.gather"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -84,10 +84,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">tprofiler.dist</a></li>
-      <li class="breadcrumb-item active">tprofiler.dist.gather</li>
+          <li class="breadcrumb-item"><a href="index.html">tprofiler.distribution</a></li>
+      <li class="breadcrumb-item active">tprofiler.distribution.gather</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/api_doc/dist/gather.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/api_doc/distribution/gather.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -97,8 +97,8 @@
              
     
     
-  <section id="module-tprofiler.dist.gather">
-<span id="tprofiler-dist-gather"></span><h1>tprofiler.dist.gather<a class="headerlink" href="#module-tprofiler.dist.gather" title="Link to this heading"></a></h1>
+  <section id="module-tprofiler.distribution.gather">
+<span id="tprofiler-distribution-gather"></span><h1>tprofiler.distribution.gather<a class="headerlink" href="#module-tprofiler.distribution.gather" title="Link to this heading"></a></h1>
 <p>Distributed tensor gathering utilities for PyTorch.</p>
 <p>This module provides utilities for gathering tensors across multiple processes in a distributed
 PyTorch environment. It handles tensors of different sizes along the concatenation dimension
@@ -106,8 +106,8 @@ by using padding and unpadding strategies.</p>
 <section id="gather">
 <h2>gather<a class="headerlink" href="#gather" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="tprofiler.dist.gather.gather">
-<span class="sig-prename descclassname"><span class="pre">tprofiler.dist.gather.</span></span><span class="sig-name descname"><span class="pre">gather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tprofiler/dist/gather.html#gather"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.dist.gather.gather" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="tprofiler.distribution.gather.gather">
+<span class="sig-prename descclassname"><span class="pre">tprofiler.distribution.gather.</span></span><span class="sig-name descname"><span class="pre">gather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tprofiler/distribution/gather.html#gather"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.distribution.gather.gather" title="Link to this definition"></a></dt>
 <dd><p>Gather tensors from all processes in a distributed environment.</p>
 <p>This function collects tensors from all processes and concatenates them along the specified
 dimension. It handles tensors of different sizes by padding them to the same size before
@@ -152,7 +152,7 @@ None otherwise. In non-distributed environments, returns the input tensor unchan
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="tprofiler.dist" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="tprofiler.distribution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../utils/index.html" class="btn btn-neutral float-right" title="tprofiler.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
@@ -182,7 +182,7 @@ None otherwise. In non-distributed environments, returns the input tensor unchan
         <div class="rst-other-versions">
                 <dl>
                     <dt>Branches</dt>
-                        <dd><a href="../../../main/api_doc/dist/gather.html">main</a></dd>
+                        <dd><a href="../../../main/api_doc/distribution/gather.html">main</a></dd>
                         <dd><a href="gather.html">HEAD</a></dd>
                 </dl>
         </div>
