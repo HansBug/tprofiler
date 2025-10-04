@@ -31,22 +31,10 @@ def gather_default_dim_worker(rank, world_size, port, saver: DistDataSaver):
         saver.save_data(rank, jdata)
 
 
-def gather_default_worker_dst_0(rank, world_size, port, saver: DistDataSaver):
+def gather_default_worker_dst(rank, world_size, port, saver: DistDataSaver, dst: int):
     with spawn_worker_context(rank, world_size, port):
         data = torch.randn(4 - rank, 3)
-        gdata = gather(data, dst=0)
-        jdata = {
-            'rank': rank,
-            'data': data,
-            'gdata': gdata,
-        }
-        saver.save_data(rank, jdata)
-
-
-def gather_default_worker_dst_2(rank, world_size, port, saver: DistDataSaver):
-    with spawn_worker_context(rank, world_size, port):
-        data = torch.randn(4 - rank, 3)
-        gdata = gather(data, dst=2)
+        gdata = gather(data, dst=dst)
         jdata = {
             'rank': rank,
             'data': data,
@@ -98,10 +86,11 @@ class TestDistGather:
                 expected=expected_result,
             )
 
-    def test_gather_dst_0(self, free_port):
+    @pytest.mark.parametrize(['dst'], [(i,) for i in range(4)])
+    def test_gather_dst(self, free_port, dst):
         world_size = 4
         saver = DistDataSaver()
-        mp.spawn(gather_default_worker_dst_0, args=(world_size, free_port, saver), nprocs=world_size, join=True)
+        mp.spawn(gather_default_worker_dst, args=(world_size, free_port, saver, dst), nprocs=world_size, join=True)
 
         retval = saver.load_all()
         assert len(retval) == world_size
@@ -111,28 +100,7 @@ class TestDistGather:
 
         expected_result = torch.concat(tensors)
         for i in range(len(retval)):
-            if i == 0:
-                torch.testing.assert_allclose(
-                    actual=retval[i]['gdata'],
-                    expected=expected_result,
-                )
-            else:
-                assert retval[i]['gdata'] is None
-
-    def test_gather_dst_2(self, free_port):
-        world_size = 4
-        saver = DistDataSaver()
-        mp.spawn(gather_default_worker_dst_2, args=(world_size, free_port, saver), nprocs=world_size, join=True)
-
-        retval = saver.load_all()
-        assert len(retval) == world_size
-        tensors = []
-        for i in range(len(retval)):
-            tensors.append(retval[i]['data'])
-
-        expected_result = torch.concat(tensors)
-        for i in range(len(retval)):
-            if i == 2:
+            if i == dst:
                 torch.testing.assert_allclose(
                     actual=retval[i]['gdata'],
                     expected=expected_result,
