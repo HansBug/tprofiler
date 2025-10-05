@@ -1,7 +1,7 @@
 import time
 from contextlib import contextmanager
 from dataclasses import field, dataclass
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 
 import torch
 import torch.distributed as dist
@@ -36,6 +36,11 @@ class TimeManager:
     def _get_time_torch(self, name: str) -> torch.Tensor:
         return torch.tensor(self._get_time(name), dtype=torch.float32)
 
+    def _get_time_with_rank(self, name: str) -> Tuple[torch.Tensor, torch.Tensor]:
+        t = self._get_time_torch(name)
+        r = torch.ones_like(t, dtype=torch.int32) * dist.get_rank()
+        return t, r
+
     @contextmanager
     def timer(self, name: str):
         start_time = time.time()
@@ -55,15 +60,42 @@ class TimeManager:
         finally:
             timer_stack.pop()
 
-    def gather(self):
-        retval = {}
+    def gather(self, dst: Optional[int] = None) -> Optional[Dict[str, 'GatheredTime']]:
+        is_gather_dst = dst is None or dst == dist.get_rank()
+        retval = {} if is_gather_dst else None
         for key in self.records:
-            times = self._get_time_torch(key)
-            gathered_times = gather(times, dst=0)
-            if gathered_times is not None:
-                retval[key] = gathered_times
+            times, ranks = self._get_time_with_rank(key)
+            gathered_times = gather(times, dst=dst)
+            gathered_ranks = gather(ranks, dst=dst)
+            if is_gather_dst:
+                retval[key] = GatheredTime(
+                    times=gathered_times,
+                    ranks=gathered_ranks,
+                )
 
-        if dist.get_rank() == 0:
-            return retval
-        else:
-            return None
+        return retval
+
+
+@dataclass
+class GatheredTime:
+    times: torch.Tensor
+    ranks: torch.Tensor
+
+    def get_rank(self, rank: int) -> 'GatheredTime':
+        f = self.ranks == rank
+        return GatheredTime(
+            times=self.times[f],
+            ranks=self.ranks[f],
+        )
+
+    def sum(self) -> float:
+        return self.times.sum().detach().cpu().item()
+
+    def count(self) -> int:
+        return self.times.shape[0]
+
+    def mean(self) -> float:
+        return self.times.mean().detach().cpu().item()
+
+    def std(self) -> float:
+        return self.times.std().detach().cpu().item()
