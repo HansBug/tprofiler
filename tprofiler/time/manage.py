@@ -6,9 +6,9 @@ including context managers for timing code blocks, gathering timing data across 
 and visualization tools for analyzing performance metrics.
 
 The main components include:
+
 - TimeManager: Core timing functionality with context managers
 - GatheredTime: Analysis and visualization of distributed timing data
-- timer() context manager: Convenient timing interface
 """
 
 import time
@@ -33,6 +33,10 @@ def _get_timer_stack() -> Stack:
     """
     Get the current timer stack from the context.
 
+    This function retrieves the timer stack from the current execution context,
+    creating a new stack if none exists. The timer stack manages active
+    TimeManager instances for nested timing operations.
+
     :return: The timer stack instance.
     :rtype: Stack
     """
@@ -47,6 +51,8 @@ class TimeManager:
 
     This class provides functionality to measure and record execution times for different
     operations, with support for distributed environments and context management.
+    It maintains timing records for named operations and provides context managers
+    for convenient timing measurement.
 
     :param records: Dictionary storing timing records for different operations.
     :type records: Dict[str, List[float]]
@@ -66,6 +72,10 @@ class TimeManager:
         """
         Append a timing record for the specified operation.
 
+        This method adds a new timing measurement to the records for the given
+        operation name. If this is the first measurement for the operation,
+        a new list is created.
+
         :param name: The name of the operation being timed.
         :type name: str
         :param secs: The execution time in seconds.
@@ -78,6 +88,10 @@ class TimeManager:
     def _get_time(self, name: str) -> List[float]:
         """
         Get all timing records for a specific operation.
+
+        Retrieves the complete list of timing measurements recorded for the
+        specified operation name. Returns an empty list if no measurements
+        have been recorded for this operation.
 
         :param name: The name of the operation.
         :type name: str
@@ -93,6 +107,10 @@ class TimeManager:
         """
         Get timing records as a PyTorch tensor.
 
+        Converts the timing records for the specified operation into a
+        PyTorch tensor with float32 dtype. This is useful for mathematical
+        operations and distributed gathering.
+
         :param name: The name of the operation.
         :type name: str
         :return: Timing records as a float32 tensor.
@@ -103,6 +121,10 @@ class TimeManager:
     def _get_time_with_rank(self, name: str) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Get timing records along with corresponding rank information.
+
+        Returns timing data paired with rank information for distributed
+        environments. Each timing measurement is associated with the current
+        process rank.
 
         :param name: The name of the operation.
         :type name: str
@@ -117,6 +139,11 @@ class TimeManager:
     def timer(self, name: str):
         """
         Context manager for timing code execution.
+
+        This context manager measures the execution time of the code block
+        within it and automatically records the timing under the specified name.
+        It uses high-precision time measurement and is suitable for both
+        short and long-running operations.
 
         :param name: The name to associate with this timing measurement.
         :type name: str
@@ -136,15 +163,21 @@ class TimeManager:
     def clear(self):
         """
         Clear all timing records.
+
+        Removes all recorded timing data from this TimeManager instance,
+        effectively resetting it to a clean state.
         """
         self.records.clear()
 
     @contextmanager
     def enable_timer(self):
         """
-        Context manager to enable this timer as the active timer in the current context.
+        Context manager to enable this TimeManager in the timer stack.
 
-        This allows the global timer() function to use this TimeManager instance.
+        This method pushes the current TimeManager instance onto the timer stack,
+        making it available for use by timer decorators and context managers
+        throughout the nested execution context. The TimeManager is automatically
+        removed from the stack when the context exits.
 
         :yields: None
 
@@ -152,6 +185,7 @@ class TimeManager:
 
             >>> tm = TimeManager()
             >>> with tm.enable_timer():
+            ...     # Now timer decorators and contexts will use this TimeManager
             ...     with timer('operation'):
             ...         pass
         """
@@ -166,6 +200,11 @@ class TimeManager:
     def gather(self, dst: Optional[int] = None) -> Optional[Dict[str, 'GatheredTime']]:
         """
         Gather timing data from all processes in a distributed environment.
+
+        Collects timing measurements from all processes in the distributed group
+        and returns them as GatheredTime objects for analysis. This is useful
+        for understanding performance characteristics across the entire distributed
+        training setup.
 
         :param dst: Destination rank to gather data to. If None, gathers to all ranks.
         :type dst: Optional[int]
@@ -199,7 +238,9 @@ class GatheredTime:
     Container for timing data gathered from multiple processes.
 
     This class provides analysis and visualization capabilities for timing data
-    collected from distributed training environments.
+    collected from distributed training environments. It maintains timing
+    measurements along with their corresponding process ranks, enabling
+    detailed performance analysis across the distributed system.
 
     :param times: Tensor containing timing measurements.
     :type times: torch.Tensor
@@ -220,6 +261,11 @@ class GatheredTime:
     def get_rank(self, *ranks: int) -> 'GatheredTime':
         """
         Filter timing data for specific ranks.
+
+        Creates a new GatheredTime instance containing only the timing data
+        from the specified process ranks. This is useful for analyzing
+        performance characteristics of specific processes or comparing
+        performance across different ranks.
 
         :param ranks: Rank numbers to filter for.
         :type ranks: int
@@ -243,6 +289,10 @@ class GatheredTime:
         """
         Get a subset of the gathered time data using indexing.
 
+        Supports standard Python indexing and slicing operations to extract
+        subsets of the timing data while maintaining the correspondence
+        between times and ranks.
+
         :param item: Index or slice to apply to the data.
         :return: New GatheredTime instance with indexed data.
         :rtype: GatheredTime
@@ -256,6 +306,9 @@ class GatheredTime:
         """
         Check if the gathered time data is non-empty.
 
+        Returns True if there are timing measurements available, False if
+        the data structure is empty.
+
         :return: True if there is timing data, False otherwise.
         :rtype: bool
         """
@@ -264,6 +317,10 @@ class GatheredTime:
     def sum(self) -> float:
         """
         Calculate the sum of all timing measurements.
+
+        Computes the total time across all measurements, which can be useful
+        for understanding the cumulative time spent on an operation across
+        all processes.
 
         :return: Sum of all times in seconds.
         :rtype: float
@@ -274,6 +331,9 @@ class GatheredTime:
         """
         Get the total number of timing measurements.
 
+        Returns the total count of timing measurements across all ranks,
+        which indicates how many times the measured operation was executed.
+
         :return: Number of timing measurements.
         :rtype: int
         """
@@ -282,6 +342,9 @@ class GatheredTime:
     def mean(self) -> float:
         """
         Calculate the mean of all timing measurements.
+
+        Computes the average execution time across all measurements and ranks,
+        providing a central tendency measure for the operation performance.
 
         :return: Mean time in seconds.
         :rtype: float
@@ -292,6 +355,10 @@ class GatheredTime:
         """
         Calculate the standard deviation of timing measurements.
 
+        Computes the standard deviation to measure the variability in
+        execution times, which can indicate performance consistency
+        across processes and executions.
+
         :return: Standard deviation in seconds.
         :rtype: float
         """
@@ -300,6 +367,10 @@ class GatheredTime:
     def rank_count(self) -> int:
         """
         Get the number of unique ranks in the data.
+
+        Returns the count of distinct process ranks represented in the
+        gathered timing data, indicating how many processes contributed
+        measurements.
 
         :return: Number of unique ranks.
         :rtype: int
@@ -310,6 +381,11 @@ class GatheredTime:
              alpha: float = 0.7, title: Optional[str] = None, ax=None, **kwargs):
         """
         Plot histogram of timing distribution.
+
+        Creates a histogram visualization of the timing data distribution,
+        with options to show all ranks together or separately. This is useful
+        for understanding the performance characteristics and identifying
+        outliers or patterns in execution times.
 
         :param bins: Number of histogram bins. If None, uses matplotlib default.
         :type bins: Optional[int]
