@@ -3,9 +3,12 @@ from contextlib import contextmanager
 from dataclasses import field, dataclass
 from typing import Dict, List, Tuple, Optional
 
+import numpy as np
 import torch
 import torch.distributed as dist
 from hbutils.reflection import context
+from hbutils.string import plural_word
+from matplotlib import pyplot as plt
 
 from ..distribution import gather
 from ..utils import Stack
@@ -81,12 +84,17 @@ class GatheredTime:
     times: torch.Tensor
     ranks: torch.Tensor
 
-    def get_rank(self, rank: int) -> 'GatheredTime':
-        f = self.ranks == rank
+    def get_rank(self, *ranks: int) -> 'GatheredTime':
+        mask = torch.zeros_like(self.ranks, dtype=torch.bool, device=self.ranks.device)
+        for rank in ranks:
+            mask |= (self.ranks == rank)
         return GatheredTime(
-            times=self.times[f],
-            ranks=self.ranks[f],
+            times=self.times[mask],
+            ranks=self.ranks[mask],
         )
+
+    def __bool__(self):
+        return self.ranks.numel() > 0
 
     def sum(self) -> float:
         return self.times.sum().detach().cpu().item()
@@ -99,3 +107,50 @@ class GatheredTime:
 
     def std(self) -> float:
         return self.times.std().detach().cpu().item()
+
+    def rank_count(self) -> int:
+        return torch.unique(self.ranks).numel()
+
+    def hist(self, bins: Optional[int] = None, separate_ranks: bool = False,
+             alpha: float = 0.7, title: Optional[str] = None, ax=None, **kwargs):
+        """
+        绘制时间分布的直方图
+
+        Args:
+            ax: matplotlib的Axes对象，用于绘制
+            bins: 直方图的bins数量，默认30
+            separate_ranks: 是否将每个rank分开展示，默认False
+            alpha: 透明度，当separate_ranks=True时有用，默认0.7
+            **kwargs: 传递给ax.hist的其他参数
+        """
+        ax = ax or plt.gca()
+        title = title or 'Time Distribution'
+        times_np = self.times.detach().cpu().numpy()
+        ranks_np = self.ranks.detach().cpu().numpy()
+
+        unique_ranks = np.unique(ranks_np)
+        if not separate_ranks:
+            # 所有rank放在一起展示
+            ax.hist(times_np, bins=bins, alpha=1.0, **kwargs)
+            ax.set_title(f'{title}\n'
+                         f'(All {plural_word(self.rank_count(), "Rank")}, n={len(times_np)}, '
+                         f'mean={self.mean():.3g}s, std={self.std():.3g}s)')
+        else:
+            # 每个rank分开展示
+            for i, rank in enumerate(unique_ranks):
+                rank_mask = ranks_np == rank
+                rank_times = times_np[rank_mask]
+                ax.hist(
+                    rank_times, bins=bins, alpha=alpha,
+                    label=f'Rank #{rank} (n={len(rank_times)}, '
+                          f'mean={rank_times.mean():.2g}s, std={rank_times.std():.2g}s)',
+                    **kwargs
+                )
+
+            ax.set_title(f'{title} by {plural_word(self.rank_count(), "Rank")}\n'
+                         f'(mean={self.mean():.3g}s, std={self.std():.3g}s)')
+            ax.legend()
+
+        ax.set_xlabel(f'Time (seconds)')
+        ax.set_ylabel(f'Frequency')
+        ax.grid()

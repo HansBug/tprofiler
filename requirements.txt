@@ -5,3 +5,4 @@ cachetools
 torch
 nvtx
 numpy
+matplotlib
