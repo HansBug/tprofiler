@@ -10,3 +10,4 @@ tprofiler.utils
     :maxdepth: 3
 
     device
+    stack

@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tprofiler.utils.stack &mdash; tprofiler 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c9d0a6ec" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="tprofiler.utils.device" href="device.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            tprofiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/quick_start/index.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../information/environment.result.html">Run Environment Information</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">tprofiler.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../distribution/index.html">tprofiler.distribution</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">tprofiler.utils</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="device.html">tprofiler.utils.device</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tprofiler.utils.stack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stack">Stack</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tprofiler.utils.stack.Stack"><code class="docutils literal notranslate"><span class="pre">Stack</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">tprofiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">tprofiler.utils</a></li>
+      <li class="breadcrumb-item active">tprofiler.utils.stack</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api_doc/utils/stack.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+    
+    
+  <section id="module-tprofiler.utils.stack">
+<span id="tprofiler-utils-stack"></span><h1>tprofiler.utils.stack<a class="headerlink" href="#module-tprofiler.utils.stack" title="Link to this heading"></a></h1>
+<p>A high-performance stack implementation using deque.</p>
+<p>This module provides a Stack class that implements the Last-In-First-Out (LIFO) 
+data structure using Python’s deque for optimal performance. The stack supports 
+all standard stack operations with O(1) time complexity.</p>
+<section id="stack">
+<h2>Stack<a class="headerlink" href="#stack" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tprofiler.utils.stack.</span></span><span class="sig-name descname"><span class="pre">Stack</span></span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack" title="Link to this definition"></a></dt>
+<dd><p>A high-performance stack implementation using deque.</p>
+<p>This class implements a Last-In-First-Out (LIFO) data structure using 
+Python’s deque for better performance compared to list-based implementations.
+All basic stack operations (push, pop, peek) have O(1) time complexity.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">peek</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">size</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.__bool__">
+<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.__bool__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.__bool__" title="Link to this definition"></a></dt>
+<dd><p>Support for boolean value judgment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the stack is not empty, False if empty.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bool</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bool</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize an empty stack.</p>
+<p>Uses deque implementation for better performance with O(1) operations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.__len__" title="Link to this definition"></a></dt>
+<dd><p>Support for the len() function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of items in the stack.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.__str__" title="Link to this definition"></a></dt>
+<dd><p>Return a string representation of the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String representation showing the stack contents.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="go">&#39;Stack([1, 2])&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.clear" title="Link to this definition"></a></dt>
+<dd><p>Remove all items from the stack.</p>
+<p>After calling this method, the stack will be empty.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">is_empty</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.is_empty">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_empty</span></span><a class="headerlink" href="#tprofiler.utils.stack.Stack.is_empty" title="Link to this definition"></a></dt>
+<dd><p>Check if the stack is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the stack is empty, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p>Time complexity: O(1)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">is_empty</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">is_empty</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.peek">
+<span class="sig-name descname"><span class="pre">peek</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.peek"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.peek" title="Link to this definition"></a></dt>
+<dd><p>Return the top item from the stack without removing it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The top item from the stack.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the stack is empty.</p>
+</dd>
+</dl>
+<p>Time complexity: O(1)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">peek</span><span class="p">()</span>
+<span class="go">42</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">size</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.pop" title="Link to this definition"></a></dt>
+<dd><p>Remove and return the top item from the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The top item from the stack.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the stack is empty.</p>
+</dd>
+</dl>
+<p>Time complexity: O(1)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="go">42</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tprofiler/utils/stack.html#Stack.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tprofiler.utils.stack.Stack.push" title="Link to this definition"></a></dt>
+<dd><p>Push an item onto the top of the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>Any</em>) – The item to push onto the stack.</p>
+</dd>
+</dl>
+<p>Time complexity: O(1)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">size</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tprofiler.utils.stack.Stack.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#tprofiler.utils.stack.Stack.size" title="Link to this definition"></a></dt>
+<dd><p>Get the number of items in the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of items in the stack.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p>Time complexity: O(1)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">size</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span><span class="o">.</span><span class="n">size</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="device.html" class="btn btn-neutral float-left" title="tprofiler.utils.device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, hansbug.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+    <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: HEAD
+    <span class="fa fa-caret-down"></span>
+  </span>
+        <div class="rst-other-versions">
+                <dl>
+                    <dt>Branches</dt>
+                        <dd><a href="../../../main/api_doc/utils/stack.html">main</a></dd>
+                        <dd><a href="stack.html">HEAD</a></dd>
+                </dl>
+        </div>
+    </div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
