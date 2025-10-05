@@ -146,28 +146,20 @@ if __name__ == "__main__":
     print("\nStarting 4 worker processes...")
     print("-" * 60)
 
-    try:
-        # Spawn 4 worker processes to demonstrate multi-process timing
-        # mp.spawn creates multiple processes, each running the worker function
-        # args=(4,) passes world_size=4 to each worker process
-        # nprocs=4 specifies the number of processes to create
-        # join=True waits for all processes to complete before continuing
-        mp.spawn(worker, args=(4,), nprocs=4, join=True)
+    # Spawn 4 worker processes to demonstrate multi-process timing
+    # mp.spawn creates multiple processes, each running the worker function
+    # args=(4,) passes world_size=4 to each worker process
+    # nprocs=4 specifies the number of processes to create
+    # join=True waits for all processes to complete before continuing
+    mp.spawn(worker, args=(4,), nprocs=4, join=True)
 
-        print("-" * 60)
-        print("✅ Demo completed successfully!")
-        print("\nKey takeaways:")
-        print("• TimeManager.timer() - Manual timing of code blocks")
-        print("• @timer_wrap() - Automatic timing of decorated functions")
-        print("• TimeManager.enable_timer() - Activates automatic timing")
-        print("• timer() - Context manager for timing arbitrary code")
-        print("• TimeManager.gather() - Collects timing data across processes")
-        print("• GatheredTime - Provides analysis and visualization tools")
-
-    except Exception as e:
-        print(f"❌ Demo failed with error: {e}")
-        print("Make sure you have all required dependencies installed:")
-        print("- torch")
-        print("- matplotlib")
-        print("- numpy")
+    print("-" * 60)
+    print("✅ Demo completed successfully!")
+    print("\nKey takeaways:")
+    print("• TimeManager.timer() - Manual timing of code blocks")
+    print("• @timer_wrap() - Automatic timing of decorated functions")
+    print("• TimeManager.enable_timer() - Activates automatic timing")
+    print("• timer() - Context manager for timing arbitrary code")
+    print("• TimeManager.gather() - Collects timing data across processes")
+    print("• GatheredTime - Provides analysis and visualization tools")
 ```
