@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tprofiler.time.manage &mdash; tprofiler 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=c9d0a6ec" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            tprofiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/quick_start/index.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../information/environment.result.html">Run Environment Information</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/config/index.html">tprofiler.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/distribution/index.html">tprofiler.distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/time/index.html">tprofiler.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_doc/utils/index.html">tprofiler.utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tprofiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">tprofiler.time.manage</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+    
+    
+  <h1>Source code for tprofiler.time.manage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Time measurement and profiling utilities for distributed PyTorch applications.</span>
+
+<span class="sd">This module provides comprehensive timing functionality for distributed training scenarios,</span>
+<span class="sd">including context managers for timing code blocks, gathering timing data across processes,</span>
+<span class="sd">and visualization tools for analyzing performance metrics.</span>
+
+<span class="sd">The main components include:</span>
+
+<span class="sd">- TimeManager: Core timing functionality with context managers</span>
+<span class="sd">- GatheredTime: Analysis and visualization of distributed timing data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hbutils.reflection</span><span class="w"> </span><span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hbutils.string</span><span class="w"> </span><span class="kn">import</span> <span class="n">plural_word</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..distribution</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stack</span>
+
+<span class="n">_TIMER_STACK_NAME</span> <span class="o">=</span> <span class="s1">&#39;timer_stack&#39;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_timer_stack</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stack</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the current timer stack from the context.</span>
+
+<span class="sd">    This function retrieves the timer stack from the current execution context,</span>
+<span class="sd">    creating a new stack if none exists. The timer stack manages active</span>
+<span class="sd">    TimeManager instances for nested timing operations.</span>
+
+<span class="sd">    :return: The timer stack instance.</span>
+<span class="sd">    :rtype: Stack</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timer_stack</span> <span class="o">=</span> <span class="n">context</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_TIMER_STACK_NAME</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">Stack</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">timer_stack</span>
+
+
+<div class="viewcode-block" id="TimeManager">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A comprehensive time measurement manager for tracking execution times.</span>
+
+<span class="sd">    This class provides functionality to measure and record execution times for different</span>
+<span class="sd">    operations, with support for distributed environments and context management.</span>
+<span class="sd">    It maintains timing records for named operations and provides context managers</span>
+<span class="sd">    for convenient timing measurement.</span>
+
+<span class="sd">    :param records: Dictionary storing timing records for different operations.</span>
+<span class="sd">    :type records: Dict[str, List[float]]</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        &gt;&gt;&gt; tm = TimeManager()</span>
+<span class="sd">        &gt;&gt;&gt; with tm.timer(&#39;operation1&#39;):</span>
+<span class="sd">        ...     time.sleep(0.1)</span>
+<span class="sd">        &gt;&gt;&gt; times = tm._get_time(&#39;operation1&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; len(times) == 1</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">records</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TimeManager._append_time">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager._append_time">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_append_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secs</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append a timing record for the specified operation.</span>
+
+<span class="sd">        This method adds a new timing measurement to the records for the given</span>
+<span class="sd">        operation name. If this is the first measurement for the operation,</span>
+<span class="sd">        a new list is created.</span>
+
+<span class="sd">        :param name: The name of the operation being timed.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param secs: The execution time in seconds.</span>
+<span class="sd">        :type secs: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">secs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeManager._get_time">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all timing records for a specific operation.</span>
+
+<span class="sd">        Retrieves the complete list of timing measurements recorded for the</span>
+<span class="sd">        specified operation name. Returns an empty list if no measurements</span>
+<span class="sd">        have been recorded for this operation.</span>
+
+<span class="sd">        :param name: The name of the operation.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: List of timing records in seconds.</span>
+<span class="sd">        :rtype: List[float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TimeManager._get_time_torch">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time_torch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_time_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get timing records as a PyTorch tensor.</span>
+
+<span class="sd">        Converts the timing records for the specified operation into a</span>
+<span class="sd">        PyTorch tensor with float32 dtype. This is useful for mathematical</span>
+<span class="sd">        operations and distributed gathering.</span>
+
+<span class="sd">        :param name: The name of the operation.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: Timing records as a float32 tensor.</span>
+<span class="sd">        :rtype: torch.Tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_time</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeManager._get_time_with_rank">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time_with_rank">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_time_with_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get timing records along with corresponding rank information.</span>
+
+<span class="sd">        Returns timing data paired with rank information for distributed</span>
+<span class="sd">        environments. Each timing measurement is associated with the current</span>
+<span class="sd">        process rank.</span>
+
+<span class="sd">        :param name: The name of the operation.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: Tuple of (times, ranks) tensors.</span>
+<span class="sd">        :rtype: Tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_time_torch</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span> <span class="o">*</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="TimeManager.timer">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager.timer">[docs]</a>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Context manager for timing code execution.</span>
+
+<span class="sd">        This context manager measures the execution time of the code block</span>
+<span class="sd">        within it and automatically records the timing under the specified name.</span>
+<span class="sd">        It uses high-precision time measurement and is suitable for both</span>
+<span class="sd">        short and long-running operations.</span>
+
+<span class="sd">        :param name: The name to associate with this timing measurement.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :yields: None</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; tm = TimeManager()</span>
+<span class="sd">            &gt;&gt;&gt; with tm.timer(&#39;my_operation&#39;):</span>
+<span class="sd">            ...     # Your code here</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_time</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeManager.clear">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager.clear">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear all timing records.</span>
+
+<span class="sd">        Removes all recorded timing data from this TimeManager instance,</span>
+<span class="sd">        effectively resetting it to a clean state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TimeManager.enable_timer">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager.enable_timer">[docs]</a>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enable_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Context manager to enable this TimeManager in the timer stack.</span>
+
+<span class="sd">        This method pushes the current TimeManager instance onto the timer stack,</span>
+<span class="sd">        making it available for use by timer decorators and context managers</span>
+<span class="sd">        throughout the nested execution context. The TimeManager is automatically</span>
+<span class="sd">        removed from the stack when the context exits.</span>
+
+<span class="sd">        :yields: None</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; tm = TimeManager()</span>
+<span class="sd">            &gt;&gt;&gt; with tm.enable_timer():</span>
+<span class="sd">            ...     # Now timer decorators and contexts will use this TimeManager</span>
+<span class="sd">            ...     with timer(&#39;operation&#39;):</span>
+<span class="sd">            ...         pass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timer_stack</span> <span class="o">=</span> <span class="n">_get_timer_stack</span><span class="p">()</span>
+        <span class="n">timer_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">context</span><span class="p">()</span><span class="o">.</span><span class="n">vars</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">_TIMER_STACK_NAME</span><span class="p">:</span> <span class="n">timer_stack</span><span class="p">}):</span>
+                <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">timer_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TimeManager.gather">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager.gather">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;GatheredTime&#39;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather timing data from all processes in a distributed environment.</span>
+
+<span class="sd">        Collects timing measurements from all processes in the distributed group</span>
+<span class="sd">        and returns them as GatheredTime objects for analysis. This is useful</span>
+<span class="sd">        for understanding performance characteristics across the entire distributed</span>
+<span class="sd">        training setup.</span>
+
+<span class="sd">        :param dst: Destination rank to gather data to. If None, gathers to all ranks.</span>
+<span class="sd">        :type dst: Optional[int]</span>
+<span class="sd">        :return: Dictionary of gathered timing data, or None if not the destination rank.</span>
+<span class="sd">        :rtype: Optional[Dict[str, GatheredTime]]</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; tm = TimeManager()</span>
+<span class="sd">            &gt;&gt;&gt; # After recording some times...</span>
+<span class="sd">            &gt;&gt;&gt; gathered = tm.gather(dst=0)  # Gather to rank 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_gather_dst</span> <span class="o">=</span> <span class="n">dst</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dst</span> <span class="o">==</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">is_gather_dst</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="n">times</span><span class="p">,</span> <span class="n">ranks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_time_with_rank</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">gathered_times</span> <span class="o">=</span> <span class="n">gather</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
+            <span class="n">gathered_ranks</span> <span class="o">=</span> <span class="n">gather</span><span class="p">(</span><span class="n">ranks</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_gather_dst</span><span class="p">:</span>
+                <span class="n">retval</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">GatheredTime</span><span class="p">(</span>
+                    <span class="n">times</span><span class="o">=</span><span class="n">gathered_times</span><span class="p">,</span>
+                    <span class="n">ranks</span><span class="o">=</span><span class="n">gathered_ranks</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">retval</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GatheredTime">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GatheredTime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container for timing data gathered from multiple processes.</span>
+
+<span class="sd">    This class provides analysis and visualization capabilities for timing data</span>
+<span class="sd">    collected from distributed training environments. It maintains timing</span>
+<span class="sd">    measurements along with their corresponding process ranks, enabling</span>
+<span class="sd">    detailed performance analysis across the distributed system.</span>
+
+<span class="sd">    :param times: Tensor containing timing measurements.</span>
+<span class="sd">    :type times: torch.Tensor</span>
+<span class="sd">    :param ranks: Tensor containing corresponding rank information.</span>
+<span class="sd">    :type ranks: torch.Tensor</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        &gt;&gt;&gt; times = torch.tensor([0.1, 0.2, 0.15])</span>
+<span class="sd">        &gt;&gt;&gt; ranks = torch.tensor([0, 1, 0])</span>
+<span class="sd">        &gt;&gt;&gt; gt = GatheredTime(times, ranks)</span>
+<span class="sd">        &gt;&gt;&gt; gt.mean()</span>
+<span class="sd">        0.15...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">times</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">ranks</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+
+<div class="viewcode-block" id="GatheredTime.get_rank">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.get_rank">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">ranks</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;GatheredTime&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter timing data for specific ranks.</span>
+
+<span class="sd">        Creates a new GatheredTime instance containing only the timing data</span>
+<span class="sd">        from the specified process ranks. This is useful for analyzing</span>
+<span class="sd">        performance characteristics of specific processes or comparing</span>
+<span class="sd">        performance across different ranks.</span>
+
+<span class="sd">        :param ranks: Rank numbers to filter for.</span>
+<span class="sd">        :type ranks: int</span>
+<span class="sd">        :return: New GatheredTime instance with filtered data.</span>
+<span class="sd">        :rtype: GatheredTime</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; gt = GatheredTime(torch.tensor([0.1, 0.2]), torch.tensor([0, 1]))</span>
+<span class="sd">            &gt;&gt;&gt; rank0_data = gt.get_rank(0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">|=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span> <span class="o">==</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GatheredTime</span><span class="p">(</span>
+            <span class="n">times</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+            <span class="n">ranks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.__getitem__">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.__getitem__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;GatheredTime&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a subset of the gathered time data using indexing.</span>
+
+<span class="sd">        Supports standard Python indexing and slicing operations to extract</span>
+<span class="sd">        subsets of the timing data while maintaining the correspondence</span>
+<span class="sd">        between times and ranks.</span>
+
+<span class="sd">        :param item: Index or slice to apply to the data.</span>
+<span class="sd">        :return: New GatheredTime instance with indexed data.</span>
+<span class="sd">        :rtype: GatheredTime</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">GatheredTime</span><span class="p">(</span>
+            <span class="n">times</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+            <span class="n">ranks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.__bool__">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.__bool__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the gathered time data is non-empty.</span>
+
+<span class="sd">        Returns True if there are timing measurements available, False if</span>
+<span class="sd">        the data structure is empty.</span>
+
+<span class="sd">        :return: True if there is timing data, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.sum">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the sum of all timing measurements.</span>
+
+<span class="sd">        Computes the total time across all measurements, which can be useful</span>
+<span class="sd">        for understanding the cumulative time spent on an operation across</span>
+<span class="sd">        all processes.</span>
+
+<span class="sd">        :return: Sum of all times in seconds.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.count">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the total number of timing measurements.</span>
+
+<span class="sd">        Returns the total count of timing measurements across all ranks,</span>
+<span class="sd">        which indicates how many times the measured operation was executed.</span>
+
+<span class="sd">        :return: Number of timing measurements.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.mean">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the mean of all timing measurements.</span>
+
+<span class="sd">        Computes the average execution time across all measurements and ranks,</span>
+<span class="sd">        providing a central tendency measure for the operation performance.</span>
+
+<span class="sd">        :return: Mean time in seconds.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.std">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the standard deviation of timing measurements.</span>
+
+<span class="sd">        Computes the standard deviation to measure the variability in</span>
+<span class="sd">        execution times, which can indicate performance consistency</span>
+<span class="sd">        across processes and executions.</span>
+
+<span class="sd">        :return: Standard deviation in seconds.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.rank_count">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.rank_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of unique ranks in the data.</span>
+
+<span class="sd">        Returns the count of distinct process ranks represented in the</span>
+<span class="sd">        gathered timing data, indicating how many processes contributed</span>
+<span class="sd">        measurements.</span>
+
+<span class="sd">        :return: Number of unique ranks.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">)</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GatheredTime.hist">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.hist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">separate_ranks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+             <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot histogram of timing distribution.</span>
+
+<span class="sd">        Creates a histogram visualization of the timing data distribution,</span>
+<span class="sd">        with options to show all ranks together or separately. This is useful</span>
+<span class="sd">        for understanding the performance characteristics and identifying</span>
+<span class="sd">        outliers or patterns in execution times.</span>
+
+<span class="sd">        :param bins: Number of histogram bins. If None, uses matplotlib default.</span>
+<span class="sd">        :type bins: Optional[int]</span>
+<span class="sd">        :param separate_ranks: Whether to show each rank separately.</span>
+<span class="sd">        :type separate_ranks: bool</span>
+<span class="sd">        :param alpha: Transparency level when separate_ranks=True.</span>
+<span class="sd">        :type alpha: float</span>
+<span class="sd">        :param title: Title for the plot. Defaults to &#39;Time Distribution&#39;.</span>
+<span class="sd">        :type title: Optional[str]</span>
+<span class="sd">        :param ax: Matplotlib axes object for plotting. If None, uses current axes.</span>
+<span class="sd">        :type ax: Optional[matplotlib.axes.Axes]</span>
+<span class="sd">        :param kwargs: Additional arguments passed to matplotlib hist function.</span>
+<span class="sd">        :type kwargs: dict</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">            &gt;&gt;&gt; gt = GatheredTime(torch.tensor([0.1, 0.2, 0.15]), torch.tensor([0, 1, 0]))</span>
+<span class="sd">            &gt;&gt;&gt; fig, ax = plt.subplots()</span>
+<span class="sd">            &gt;&gt;&gt; gt.hist(ax=ax, bins=10)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="ow">or</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">title</span> <span class="ow">or</span> <span class="s1">&#39;Time Distribution&#39;</span>
+        <span class="n">times_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">ranks_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="n">unique_ranks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ranks_np</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">separate_ranks</span><span class="p">:</span>
+            <span class="c1"># Show all ranks together</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">times_np</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;(All </span><span class="si">{</span><span class="n">plural_word</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rank_count</span><span class="p">(),</span><span class="w"> </span><span class="s2">&quot;Rank&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">times_np</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;mean=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">s, std=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">s)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Show each rank separately</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_ranks</span><span class="p">):</span>
+                <span class="n">rank_mask</span> <span class="o">=</span> <span class="n">ranks_np</span> <span class="o">==</span> <span class="n">rank</span>
+                <span class="n">rank_times</span> <span class="o">=</span> <span class="n">times_np</span><span class="p">[</span><span class="n">rank_mask</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+                    <span class="n">rank_times</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Rank #</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s1"> (n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rank_times</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;mean=</span><span class="si">{</span><span class="n">rank_times</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.2g</span><span class="si">}</span><span class="s1">s, std=</span><span class="si">{</span><span class="n">rank_times</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.2g</span><span class="si">}</span><span class="s1">s)&#39;</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1"> by </span><span class="si">{</span><span class="n">plural_word</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rank_count</span><span class="p">(),</span><span class="w"> </span><span class="s2">&quot;Rank&quot;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;(mean=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">s, std=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1">s)&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, hansbug.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+    <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+        <div class="rst-other-versions">
+                <dl>
+                    <dt>Branches</dt>
+                        <dd><a href="manage.html">main</a></dd>
+                        <dd><a href="../../../../HEAD/index.html">HEAD</a></dd>
+                </dl>
+        </div>
+    </div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

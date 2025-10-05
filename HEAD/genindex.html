@@ -55,6 +55,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_doc/config/index.html">tprofiler.config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_doc/distribution/index.html">tprofiler.distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_doc/time/index.html">tprofiler.time</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_doc/utils/index.html">tprofiler.utils</a></li>
 </ul>
 
@@ -87,10 +88,13 @@
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  
@@ -102,14 +106,20 @@
 </li>
       <li><a href="api_doc/config/meta.html#tprofiler.config.meta.__AUTHOR_EMAIL__">__AUTHOR_EMAIL__ (in module tprofiler.config.meta)</a>
 </li>
-      <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__bool__">__bool__() (tprofiler.utils.stack.Stack method)</a>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.__bool__">__bool__() (tprofiler.time.manage.GatheredTime method)</a>
+
+      <ul>
+        <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__bool__">(tprofiler.utils.stack.Stack method)</a>
 </li>
+      </ul></li>
       <li><a href="api_doc/config/meta.html#tprofiler.config.meta.__DESCRIPTION__">__DESCRIPTION__ (in module tprofiler.config.meta)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.__getitem__">__getitem__() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
+      <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__init__">__init__() (tprofiler.utils.stack.Stack method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__init__">__init__() (tprofiler.utils.stack.Stack method)</a>
-</li>
       <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__len__">__len__() (tprofiler.utils.stack.Stack method)</a>
 </li>
       <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.__str__">__str__() (tprofiler.utils.stack.Stack method)</a>
@@ -118,13 +128,37 @@
 </li>
       <li><a href="api_doc/config/meta.html#tprofiler.config.meta.__VERSION__">__VERSION__ (in module tprofiler.config.meta)</a>
 </li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager._append_time">_append_time() (tprofiler.time.manage.TimeManager method)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time">_get_time() (tprofiler.time.manage.TimeManager method)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time_torch">_get_time_torch() (tprofiler.time.manage.TimeManager method)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager._get_time_with_rank">_get_time_with_rank() (tprofiler.time.manage.TimeManager method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.clear">clear() (tprofiler.utils.stack.Stack method)</a>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager.clear">clear() (tprofiler.time.manage.TimeManager method)</a>
+
+      <ul>
+        <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.clear">(tprofiler.utils.stack.Stack method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.count">count() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager.enable_timer">enable_timer() (tprofiler.time.manage.TimeManager method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -133,6 +167,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_doc/distribution/gather.html#tprofiler.distribution.gather.gather">gather() (in module tprofiler.distribution.gather)</a>
+
+      <ul>
+        <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager.gather">(tprofiler.time.manage.TimeManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime">GatheredTime (class in tprofiler.time.manage)</a>
 </li>
       <li><a href="api_doc/utils/device.html#tprofiler.utils.device.get_device_id">get_device_id() (in module tprofiler.utils.device)</a>
 </li>
@@ -142,7 +182,17 @@
 </li>
       <li><a href="api_doc/utils/device.html#tprofiler.utils.device.get_nccl_backend">get_nccl_backend() (in module tprofiler.utils.device)</a>
 </li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.get_rank">get_rank() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
       <li><a href="api_doc/utils/device.html#tprofiler.utils.device.get_torch_device">get_torch_device() (in module tprofiler.utils.device)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.hist">hist() (tprofiler.time.manage.GatheredTime method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -162,6 +212,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.mean">mean() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
       <li>
     module
 
@@ -173,6 +225,12 @@
         <li><a href="api_doc/distribution/index.html#module-tprofiler.distribution">tprofiler.distribution</a>
 </li>
         <li><a href="api_doc/distribution/gather.html#module-tprofiler.distribution.gather">tprofiler.distribution.gather</a>
+</li>
+        <li><a href="api_doc/time/index.html#module-tprofiler.time">tprofiler.time</a>
+</li>
+        <li><a href="api_doc/time/manage.html#module-tprofiler.time.manage">tprofiler.time.manage</a>
+</li>
+        <li><a href="api_doc/time/wrapper.html#module-tprofiler.time.wrapper">tprofiler.time.wrapper</a>
 </li>
         <li><a href="api_doc/utils/index.html#module-tprofiler.utils">tprofiler.utils</a>
 </li>
@@ -198,16 +256,28 @@
   </ul></td>
 </tr></table>
 
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.rank_count">rank_count() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_doc/utils/device.html#tprofiler.utils.device.set_expandable_segments">set_expandable_segments() (in module tprofiler.utils.device)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack.size">size (tprofiler.utils.stack.Stack property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_doc/utils/stack.html#tprofiler.utils.stack.Stack">Stack (class in tprofiler.utils.stack)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.std">std() (tprofiler.time.manage.GatheredTime method)</a>
+</li>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.GatheredTime.sum">sum() (tprofiler.time.manage.GatheredTime method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -215,6 +285,16 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager">TimeManager (class in tprofiler.time.manage)</a>
+</li>
+      <li><a href="api_doc/time/wrapper.html#tprofiler.time.wrapper.timer">timer() (in module tprofiler.time.wrapper)</a>
+
+      <ul>
+        <li><a href="api_doc/time/manage.html#tprofiler.time.manage.TimeManager.timer">(tprofiler.time.manage.TimeManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_doc/time/wrapper.html#tprofiler.time.wrapper.timer_wrap">timer_wrap() (in module tprofiler.time.wrapper)</a>
+</li>
       <li>
     tprofiler.config
 
@@ -245,6 +325,27 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    tprofiler.time
+
+      <ul>
+        <li><a href="api_doc/time/index.html#module-tprofiler.time">module</a>
+</li>
+      </ul></li>
+      <li>
+    tprofiler.time.manage
+
+      <ul>
+        <li><a href="api_doc/time/manage.html#module-tprofiler.time.manage">module</a>
+</li>
+      </ul></li>
+      <li>
+    tprofiler.time.wrapper
+
+      <ul>
+        <li><a href="api_doc/time/wrapper.html#module-tprofiler.time.wrapper">module</a>
+</li>
+      </ul></li>
       <li>
     tprofiler.utils
 

@@ -29,6 +29,7 @@ Overview
 
     api_doc/config/index
     api_doc/distribution/index
+    api_doc/time/index
     api_doc/utils/index
 
 .. toctree::
