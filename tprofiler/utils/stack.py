@@ -211,3 +211,55 @@ class Stack:
             True
         """
         return not self.is_empty
+
+    def __iter__(self):
+        """
+        Return an iterator for forward traversal (bottom to top).
+
+        Iterates from the bottom of the stack to the top, i.e., from the
+        oldest element to the newest element.
+
+        :return: Iterator for forward traversal.
+        :rtype: Iterator
+
+        Time complexity: O(1) for iterator creation, O(n) for full iteration
+
+        Example::
+
+            >>> stack = Stack()
+            >>> stack.push(1)
+            >>> stack.push(2)
+            >>> stack.push(3)
+            >>> for item in stack:
+            ...     print(item)
+            1
+            2
+            3
+        """
+        return iter(self._items)
+
+    def __reversed__(self):
+        """
+        Return an iterator for reverse traversal (top to bottom).
+
+        Iterates from the top of the stack to the bottom, i.e., from the
+        newest element to the oldest element (LIFO order).
+
+        :return: Iterator for reverse traversal.
+        :rtype: Iterator
+
+        Time complexity: O(1) for iterator creation, O(n) for full iteration
+
+        Example::
+
+            >>> stack = Stack()
+            >>> stack.push(1)
+            >>> stack.push(2)
+            >>> stack.push(3)
+            >>> for item in reversed(stack):
+            ...     print(item)
+            3
+            2
+            1
+        """
+        return reversed(self._items)

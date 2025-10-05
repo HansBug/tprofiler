@@ -5,8 +5,17 @@ from typing import Dict, List
 
 import torch
 import torch.distributed as dist
+from hbutils.reflection import context
 
 from ..distribution import gather
+from ..utils import Stack
+
+_TIMER_STACK_NAME = 'timer_stack'
+
+
+def _get_timer_stack() -> Stack:
+    timer_stack = context().get(_TIMER_STACK_NAME, None) or Stack()
+    return timer_stack
 
 
 @dataclass
@@ -35,6 +44,16 @@ class TimeManager:
 
     def clear(self):
         self.records.clear()
+
+    @contextmanager
+    def enable_timer(self):
+        timer_stack = _get_timer_stack()
+        timer_stack.push(self)
+        try:
+            with context().vars(**{_TIMER_STACK_NAME: timer_stack}):
+                yield
+        finally:
+            timer_stack.pop()
 
     def gather(self):
         retval = {}

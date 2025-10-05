@@ -133,3 +133,41 @@ class TestStack:
 
         empty_stack.clear()
         assert empty_stack.is_empty
+
+    def test_iter_empty_stack(self, empty_stack):
+        items = list(empty_stack)
+        assert items == []
+
+    def test_iter_non_empty_stack(self, stack_with_items):
+        items = list(stack_with_items)
+        assert items == [1, 2, 3]
+
+    def test_iter_single_item_stack(self, single_item_stack):
+        items = list(single_item_stack)
+        assert items == ["test"]
+
+    def test_iter_for_loop(self, stack_with_items):
+        expected = [1, 2, 3]
+        actual = []
+        for item in stack_with_items:
+            actual.append(item)
+        assert actual == expected
+
+    def test_reversed_empty_stack(self, empty_stack):
+        items = list(reversed(empty_stack))
+        assert items == []
+
+    def test_reversed_non_empty_stack(self, stack_with_items):
+        items = list(reversed(stack_with_items))
+        assert items == [3, 2, 1]
+
+    def test_reversed_single_item_stack(self, single_item_stack):
+        items = list(reversed(single_item_stack))
+        assert items == ["test"]
+
+    def test_reversed_for_loop(self, stack_with_items):
+        expected = [3, 2, 1]
+        actual = []
+        for item in reversed(stack_with_items):
+            actual.append(item)
+        assert actual == expected
