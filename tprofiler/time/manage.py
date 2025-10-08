@@ -332,7 +332,7 @@ class ProfiledTime(Mapping):
             >>> pt = ProfiledTime.load('my_profile.pt')
             >>> print(pt['op1'].mean())  # Analyze loaded timing data
         """
-        records = torch.load(file, map_location='cpu')
+        records = torch.load(file, map_location='cpu', weights_only=False)
         return cls(records=records)
 
 

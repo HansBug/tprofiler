@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from tprofiler.time import timer_wrap, TimeManager, timer
+from tprofiler.time import timer_wrap, TimeManager, timer, ProfiledTime
 
 
 # Example function decorated with timer_wrap for automatic timing
@@ -92,6 +92,21 @@ def worker(rank, world_size):
     gathered_data = tm.gather(dst=0)
 
     if gathered_data is not None:
+        # Save the gathered timing data to a file for persistence
+        # The .pt extension indicates this is a PyTorch tensor file format
+        # This allows the profiling results to be stored and analyzed later
+        gathered_data.save('test_exported_time.pt')
+
+        # Demonstrate loading previously saved timing data
+        # ProfiledTime.load() can restore timing data from disk
+        # Note: The file extension is automatically handled (.pt is added if not present)
+        loaded_gathered_data = ProfiledTime.load('test_exported_time')
+
+        # Display the loaded data structure for verification
+        # This shows that the save/load cycle preserves all timing information
+        # The !r format specifier uses the object's __repr__ method for detailed output
+        print(f'Loaded gathered data: {loaded_gathered_data!r}')
+
         # Only rank 0 will have gathered_data (not None)
         print(f"\n=== Timing Analysis (Rank {rank}) ===")
 
