@@ -463,7 +463,7 @@
 <span class="sd">            &gt;&gt;&gt; pt = ProfiledTime.load(&#39;my_profile.pt&#39;)</span>
 <span class="sd">            &gt;&gt;&gt; print(pt[&#39;op1&#39;].mean())  # Analyze loaded timing data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">records</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="n">records</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">records</span><span class="o">=</span><span class="n">records</span><span class="p">)</span></div>
 </div>
 
