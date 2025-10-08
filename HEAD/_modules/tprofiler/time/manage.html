@@ -97,9 +97,11 @@
 
 <span class="sd">- TimeManager: Core timing functionality with context managers</span>
 <span class="sd">- GatheredTime: Analysis and visualization of distributed timing data</span>
+<span class="sd">- ProfiledTime: Container for multiple GatheredTime objects with serialization support</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
@@ -310,7 +312,7 @@
 
 <div class="viewcode-block" id="TimeManager.gather">
 <a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.TimeManager.gather">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;GatheredTime&#39;</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;ProfiledTime&#39;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gather timing data from all processes in a distributed environment.</span>
 
@@ -322,7 +324,7 @@
 <span class="sd">        :param dst: Destination rank to gather data to. If None, gathers to all ranks.</span>
 <span class="sd">        :type dst: Optional[int]</span>
 <span class="sd">        :return: Dictionary of gathered timing data, or None if not the destination rank.</span>
-<span class="sd">        :rtype: Optional[Dict[str, GatheredTime]]</span>
+<span class="sd">        :rtype: Optional[ProfiledTime]</span>
 
 <span class="sd">        Example::</span>
 
@@ -342,7 +344,127 @@
                     <span class="n">ranks</span><span class="o">=</span><span class="n">gathered_ranks</span><span class="p">,</span>
                 <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">ProfiledTime</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">retval</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProfiledTime">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProfiledTime</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container for multiple GatheredTime objects with serialization support.</span>
+
+<span class="sd">    This class acts as a mapping container for gathered timing data from multiple</span>
+<span class="sd">    operations, providing serialization capabilities for saving and loading</span>
+<span class="sd">    profiling results. It implements the Mapping interface to allow dictionary-like</span>
+<span class="sd">    access to the timing data.</span>
+
+<span class="sd">    :param records: Dictionary mapping operation names to GatheredTime objects.</span>
+<span class="sd">    :type records: Dict[str, GatheredTime]</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        &gt;&gt;&gt; pt = ProfiledTime({&#39;op1&#39;: gathered_time1, &#39;op2&#39;: gathered_time2})</span>
+<span class="sd">        &gt;&gt;&gt; pt[&#39;op1&#39;].mean()  # Access timing data for operation &#39;op1&#39;</span>
+<span class="sd">        &gt;&gt;&gt; pt.save(&#39;profile.pt&#39;)  # Save profiling data</span>
+<span class="sd">        &gt;&gt;&gt; loaded_pt = ProfiledTime.load(&#39;profile.pt&#39;)  # Load profiling data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">records</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;GatheredTime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the records dictionary if not provided.</span>
+
+<span class="sd">        Sets up an empty dictionary for records if none was provided during</span>
+<span class="sd">        initialization, ensuring the object is always in a valid state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="ow">or</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="ProfiledTime.__getitem__">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime.__getitem__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a GatheredTime object by operation name.</span>
+
+<span class="sd">        Provides dictionary-like access to the timing data for specific operations.</span>
+
+<span class="sd">        :param __key: The operation name to retrieve timing data for.</span>
+<span class="sd">        :type __key: str</span>
+<span class="sd">        :return: The GatheredTime object for the specified operation.</span>
+<span class="sd">        :rtype: GatheredTime</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">__key</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ProfiledTime.__len__">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime.__len__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of operations with timing data.</span>
+
+<span class="sd">        :return: Number of operations in the records.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProfiledTime.__iter__">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime.__iter__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate over operation names.</span>
+
+<span class="sd">        :return: Iterator over operation names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span></div>
+
+
+<div class="viewcode-block" id="ProfiledTime.save">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the profiling data to a file.</span>
+
+<span class="sd">        Serializes the timing records to a file using PyTorch&#39;s save functionality,</span>
+<span class="sd">        allowing the profiling data to be persisted and loaded later for analysis.</span>
+
+<span class="sd">        :param file: File path or file-like object to save to.</span>
+<span class="sd">        :type file: str or file-like object</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; pt = ProfiledTime({&#39;op1&#39;: gathered_time})</span>
+<span class="sd">            &gt;&gt;&gt; pt.save(&#39;my_profile.pt&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProfiledTime.load">
+<a class="viewcode-back" href="../../../api_doc/time/manage.html#tprofiler.time.manage.ProfiledTime.load">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load profiling data from a file.</span>
+
+<span class="sd">        Creates a new ProfiledTime instance from previously saved timing data,</span>
+<span class="sd">        allowing for analysis of profiling results from previous runs.</span>
+
+<span class="sd">        :param file: File path or file-like object to load from.</span>
+<span class="sd">        :type file: str or file-like object</span>
+<span class="sd">        :return: New ProfiledTime instance with loaded data.</span>
+<span class="sd">        :rtype: ProfiledTime</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt;&gt; pt = ProfiledTime.load(&#39;my_profile.pt&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; print(pt[&#39;op1&#39;].mean())  # Analyze loaded timing data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">records</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">records</span><span class="o">=</span><span class="n">records</span><span class="p">)</span></div>
 </div>
 
 
