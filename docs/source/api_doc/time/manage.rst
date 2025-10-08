@@ -14,6 +14,13 @@ TimeManager
 
 
 
+ProfiledTime
+----------------------------------------------------------
+
+.. autoclass:: ProfiledTime
+    :members: records,save,load,__len__,__iter__,__getitem__
+
+
 
 GatheredTime
 ----------------------------------------------------------

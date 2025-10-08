@@ -9,6 +9,7 @@ The main components include:
 
 - TimeManager: Core timing functionality with context managers
 - GatheredTime: Analysis and visualization of distributed timing data
+- ProfiledTime: Container for multiple GatheredTime objects with serialization support
 """
 
 import time
@@ -210,7 +211,7 @@ class TimeManager:
         :param dst: Destination rank to gather data to. If None, gathers to all ranks.
         :type dst: Optional[int]
         :return: Dictionary of gathered timing data, or None if not the destination rank.
-        :rtype: Optional[Dict[str, GatheredTime]]
+        :rtype: Optional[ProfiledTime]
 
         Example::
 
@@ -237,25 +238,100 @@ class TimeManager:
 
 @dataclass
 class ProfiledTime(Mapping):
+    """
+    Container for multiple GatheredTime objects with serialization support.
+
+    This class acts as a mapping container for gathered timing data from multiple
+    operations, providing serialization capabilities for saving and loading
+    profiling results. It implements the Mapping interface to allow dictionary-like
+    access to the timing data.
+
+    :param records: Dictionary mapping operation names to GatheredTime objects.
+    :type records: Dict[str, GatheredTime]
+
+    Example::
+
+        >>> pt = ProfiledTime({'op1': gathered_time1, 'op2': gathered_time2})
+        >>> pt['op1'].mean()  # Access timing data for operation 'op1'
+        >>> pt.save('profile.pt')  # Save profiling data
+        >>> loaded_pt = ProfiledTime.load('profile.pt')  # Load profiling data
+    """
     records: Dict[str, 'GatheredTime'] = None
 
     def __post_init__(self):
+        """
+        Initialize the records dictionary if not provided.
+
+        Sets up an empty dictionary for records if none was provided during
+        initialization, ensuring the object is always in a valid state.
+        """
         self.records = self.records or {}
 
     def __getitem__(self, __key: str):
+        """
+        Get a GatheredTime object by operation name.
+
+        Provides dictionary-like access to the timing data for specific operations.
+
+        :param __key: The operation name to retrieve timing data for.
+        :type __key: str
+        :return: The GatheredTime object for the specified operation.
+        :rtype: GatheredTime
+        """
         return self.records[__key]
 
     def __len__(self) -> int:
+        """
+        Get the number of operations with timing data.
+
+        :return: Number of operations in the records.
+        :rtype: int
+        """
         return len(self.records)
 
-    def __iter__(self) -> int:
+    def __iter__(self):
+        """
+        Iterate over operation names.
+
+        :return: Iterator over operation names.
+        """
         yield from self.records
 
     def save(self, file):
+        """
+        Save the profiling data to a file.
+
+        Serializes the timing records to a file using PyTorch's save functionality,
+        allowing the profiling data to be persisted and loaded later for analysis.
+
+        :param file: File path or file-like object to save to.
+        :type file: str or file-like object
+
+        Example::
+
+            >>> pt = ProfiledTime({'op1': gathered_time})
+            >>> pt.save('my_profile.pt')
+        """
         torch.save(self.records, file)
 
     @classmethod
     def load(cls, file):
+        """
+        Load profiling data from a file.
+
+        Creates a new ProfiledTime instance from previously saved timing data,
+        allowing for analysis of profiling results from previous runs.
+
+        :param file: File path or file-like object to load from.
+        :type file: str or file-like object
+        :return: New ProfiledTime instance with loaded data.
+        :rtype: ProfiledTime
+
+        Example::
+
+            >>> pt = ProfiledTime.load('my_profile.pt')
+            >>> print(pt['op1'].mean())  # Analyze loaded timing data
+        """
         records = torch.load(file, map_location='cpu')
         return cls(records=records)
 
