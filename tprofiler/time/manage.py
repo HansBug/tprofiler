@@ -12,6 +12,7 @@ The main components include:
 """
 
 import time
+from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import field, dataclass
 from typing import Dict, List, Tuple, Optional
@@ -197,7 +198,7 @@ class TimeManager:
         finally:
             timer_stack.pop()
 
-    def gather(self, dst: Optional[int] = None) -> Optional[Dict[str, 'GatheredTime']]:
+    def gather(self, dst: Optional[int] = None) -> Optional['ProfiledTime']:
         """
         Gather timing data from all processes in a distributed environment.
 
@@ -229,7 +230,34 @@ class TimeManager:
                     ranks=gathered_ranks,
                 )
 
+        if retval is not None:
+            retval = ProfiledTime(retval)
         return retval
+
+
+@dataclass
+class ProfiledTime(Mapping):
+    records: Dict[str, 'GatheredTime'] = None
+
+    def __post_init__(self):
+        self.records = self.records or {}
+
+    def __getitem__(self, __key: str):
+        return self.records[__key]
+
+    def __len__(self) -> int:
+        return len(self.records)
+
+    def __iter__(self) -> int:
+        yield from self.records
+
+    def save(self, file):
+        torch.save(self.records, file)
+
+    @classmethod
+    def load(cls, file):
+        records = torch.load(file, map_location='cpu')
+        return cls(records=records)
 
 
 @dataclass
